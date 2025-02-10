@@ -21,6 +21,7 @@ const user_entity_1 = require("./entities/user.entity");
 const role_entity_1 = require("./entities/role.entity");
 const news_entity_1 = require("./entities/news.entity");
 const category_entity_1 = require("./entities/category.entity");
+const roles_module_1 = require("./roles/roles.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,6 +44,7 @@ exports.AppModule = AppModule = __decorate([
             news_module_1.NewsModule,
             category_module_1.CategoryModule,
             dashboard_module_1.DashboardModule,
+            roles_module_1.RolesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

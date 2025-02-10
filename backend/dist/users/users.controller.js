@@ -18,6 +18,8 @@ const users_service_1 = require("./users.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_guard_1 = require("../auth/guards/roles.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
+const create_user_dto_1 = require("./dto/create-user.dto");
+const update_user_dto_1 = require("./dto/update-user.dto");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -31,25 +33,13 @@ let UsersController = class UsersController {
     findOne(id) {
         return this.usersService.findOne(id);
     }
-    async create(createUserDto, req) {
-        const requestingUserRoles = req.user.roles.map(role => role.name);
-        if (!requestingUserRoles.includes('SUPER_ADMIN')) {
-            const userRole = await this.usersService.getRoleByName('USER');
-            if (!userRole) {
-                throw new common_1.ForbiddenException('USER rolü bulunamadı');
-            }
-            createUserDto.roleIds = [userRole.id];
-        }
+    async create(createUserDto) {
         return this.usersService.create(createUserDto);
     }
     async update(id, updateUserDto, req) {
         const user = await this.usersService.findOne(id);
         if (user.email === 'mehmet_developer@hotmail.com') {
             throw new common_1.ForbiddenException('Bu kullanıcı güncellenemez');
-        }
-        const requestingUserRoles = req.user.roles.map(role => role.name);
-        if (!requestingUserRoles.includes('SUPER_ADMIN') && updateUserDto.roleIds) {
-            throw new common_1.ForbiddenException('Sadece SUPER_ADMIN kullanıcıları rol güncelleyebilir');
         }
         return this.usersService.update(id, updateUserDto);
     }
@@ -60,11 +50,18 @@ let UsersController = class UsersController {
         }
         return this.usersService.remove(id);
     }
+    async updateRoles(id, roleIds) {
+        const user = await this.usersService.findOne(+id);
+        if (user.email === 'mehmet_developer@hotmail.com') {
+            throw new common_1.ForbiddenException('Bu kullanıcının rolleri güncellenemez');
+        }
+        return this.usersService.updateRoles(+id, roleIds);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
     (0, common_1.Get)(),
-    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'ADMIN', 'AUTHOR'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -78,7 +75,7 @@ __decorate([
 ], UsersController.prototype, "getProfile", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'ADMIN', 'AUTHOR'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -86,21 +83,20 @@ __decorate([
 ], UsersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, roles_decorator_1.Roles)('SUPER_ADMIN', 'ADMIN', 'AUTHOR'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "create", null);
 __decorate([
-    (0, common_1.Put)(':id'),
+    (0, common_1.Patch)(':id'),
     (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:paramtypes", [Number, update_user_dto_1.UpdateUserDto, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "update", null);
 __decorate([
@@ -111,6 +107,15 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Patch)(':id/roles'),
+    (0, roles_decorator_1.Roles)('SUPER_ADMIN'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('roleIds')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateRoles", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
