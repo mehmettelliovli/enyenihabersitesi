@@ -324,7 +324,7 @@ export default function NewsManagement() {
   };
 
   // Add pagination calculation
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
 

@@ -27,8 +27,6 @@ import {
   CardMedia,
   CardContent,
   Grid,
-  Pagination,
-  Stack,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -79,8 +77,6 @@ export default function NewsManagement() {
     imageUrl: '',
   });
   const [detailLoading, setDetailLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(5);
 
   // Add filter states
   const [filters, setFilters] = useState({
@@ -323,24 +319,6 @@ export default function NewsManagement() {
     }
   };
 
-  // Add pagination calculation
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
-  };
-
-  // Calculate pagination
-  const paginatedNews = filteredNews.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage
-  );
-
-  const pageCount = Math.ceil(filteredNews.length / rowsPerPage);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
-
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -438,7 +416,7 @@ export default function NewsManagement() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedNews.map((item) => (
+            {filteredNews.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>{item.title}</TableCell>
                 <TableCell>{item.category?.name || 'Kategori Yok'}</TableCell>
@@ -472,20 +450,6 @@ export default function NewsManagement() {
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Add Pagination */}
-      <Box sx={{ mt: 2, mb: 2, display: 'flex', justifyContent: 'center' }}>
-        <Stack spacing={2}>
-          <Pagination 
-            count={pageCount} 
-            page={page} 
-            onChange={handlePageChange}
-            color="primary"
-            showFirstButton 
-            showLastButton
-          />
-        </Stack>
-      </Box>
 
       {/* Haber Detay Dialog */}
       <Dialog open={detailOpen} onClose={handleDetailClose} maxWidth="md" fullWidth>
