@@ -1,0 +1,93 @@
+import { DataSource } from 'typeorm';
+import { User } from '../../entities/user.entity';
+import { News } from '../../entities/news.entity';
+import { Category } from '../../entities/category.entity';
+import { UserRole } from '../../entities/role.enum';
+import * as bcrypt from 'bcrypt';
+
+export const initialSeed = async (dataSource: DataSource) => {
+  const userRepository = dataSource.getRepository(User);
+  const categoryRepository = dataSource.getRepository(Category);
+  const newsRepository = dataSource.getRepository(News);
+
+  // Kategoriler
+  const categories = await categoryRepository.save([
+    { name: 'Teknoloji', isActive: true },
+    { name: 'Spor', isActive: true },
+    { name: 'Ekonomi', isActive: true },
+    { name: 'Sağlık', isActive: true },
+    { name: 'Kültür Sanat', isActive: true }
+  ]);
+
+  // Super Admin
+  const superAdminPassword = await bcrypt.hash('mehmet61', 10);
+  const superAdmin = await userRepository.save({
+    email: 'mehmet_developer@hotmail.com',
+    password: superAdminPassword,
+    fullName: 'Mehmet Admin',
+    role: UserRole.SUPER_ADMIN,
+    bio: 'Sistem yöneticisi',
+    isActive: true
+  });
+
+  // Admin ve Yazarlar
+  const adminPassword = await bcrypt.hash('admin123', 10);
+  const admin = await userRepository.save({
+    email: 'admin@example.com',
+    password: adminPassword,
+    fullName: 'Site Yöneticisi',
+    role: UserRole.ADMIN,
+    bio: 'Site içerik yöneticisi',
+    isActive: true
+  });
+
+  const authors = await userRepository.save([
+    {
+      email: 'yazar1@example.com',
+      password: await bcrypt.hash('yazar123', 10),
+      fullName: 'Ali Yazar',
+      role: UserRole.AUTHOR,
+      bio: 'Teknoloji ve bilim yazarı',
+      isActive: true
+    },
+    {
+      email: 'yazar2@example.com',
+      password: await bcrypt.hash('yazar123', 10),
+      fullName: 'Ayşe Yazar',
+      role: UserRole.AUTHOR,
+      bio: 'Sağlık ve yaşam yazarı',
+      isActive: true
+    }
+  ]);
+
+  // Haberler
+  const news = await newsRepository.save([
+    {
+      title: 'Yapay Zeka Teknolojisinde Yeni Gelişme',
+      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      imageUrl: 'https://picsum.photos/800/400',
+      category: categories[0],
+      author: authors[0],
+      viewCount: 150,
+      isActive: true
+    },
+    {
+      title: 'Sağlıklı Yaşam İçin Öneriler',
+      content: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      imageUrl: 'https://picsum.photos/800/400',
+      category: categories[3],
+      author: authors[1],
+      viewCount: 120,
+      isActive: true
+    },
+    {
+      title: 'Ekonomide Son Gelişmeler',
+      content: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+      imageUrl: 'https://picsum.photos/800/400',
+      category: categories[2],
+      author: authors[0],
+      viewCount: 200,
+      isActive: true
+    }
+  ]);
+}; 

@@ -1,0 +1,2 @@
+export declare function buildURLQueryString(data?: any, withQuestionMark?: boolean): string;
+//# sourceMappingURL=url.d.ts.map
