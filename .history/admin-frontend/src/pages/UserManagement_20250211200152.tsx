@@ -140,21 +140,14 @@ const UserManagement = () => {
         'Content-Type': 'application/json',
       };
 
-      interface SubmitData {
-        fullName: string;
-        email: string;
-        roleIds: number[];
-        password?: string;
-      }
-
-      const submitData: SubmitData = {
+      const submitData = {
         fullName: formData.fullName,
         email: formData.email,
         roleIds: formData.roleId ? [parseInt(formData.roleId)] : [],
       };
 
       if (formData.password) {
-        submitData.password = formData.password;
+        submitData['password'] = formData.password;
       }
 
       if (selectedUser) {
