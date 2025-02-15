@@ -18,6 +18,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Chip,
   Box,
   Alert,
   CircularProgress,
@@ -140,22 +141,10 @@ const UserManagement = () => {
         'Content-Type': 'application/json',
       };
 
-      interface SubmitData {
-        fullName: string;
-        email: string;
-        roleIds: number[];
-        password?: string;
-      }
-
-      const submitData: SubmitData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        roleIds: formData.roleId ? [parseInt(formData.roleId)] : [],
+      const submitData = {
+        ...formData,
+        roleId: parseInt(formData.roleId),
       };
-
-      if (formData.password) {
-        submitData.password = formData.password;
-      }
 
       if (selectedUser) {
         await axios.patch(
@@ -172,11 +161,7 @@ const UserManagement = () => {
     } catch (err) {
       console.error('Kullanıcı kaydetme hatası:', err);
       if (axios.isAxiosError(err)) {
-        if (err.response?.status === 401) {
-          setError('Bu işlem için yetkiniz bulunmamaktadır.');
-        } else {
-          setError(err.response?.data?.message || 'Kullanıcı kaydedilirken bir hata oluştu');
-        }
+        setError(err.response?.data?.message || 'Kullanıcı kaydedilirken bir hata oluştu');
       } else {
         setError('Kullanıcı kaydedilirken bir hata oluştu');
       }

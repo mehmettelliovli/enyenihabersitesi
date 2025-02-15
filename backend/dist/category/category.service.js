@@ -24,7 +24,7 @@ let CategoryService = class CategoryService {
     async findAll() {
         return this.categoryRepository.find({
             where: { isActive: true },
-            order: { name: 'ASC' },
+            order: { id: 'ASC' },
         });
     }
     async findOne(id) {
